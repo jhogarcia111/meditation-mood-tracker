@@ -2,6 +2,181 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Estilos para el cursor de carga */
+.loading-cursor {
+  cursor: wait !important;
+}
+
+.loading-cursor * {
+  cursor: wait !important;
+}
+
+/* Animación de pulso para botones durante carga */
+.button-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.button-loading::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Estilos para el modal de celebración */
+.celebration-modal {
+  animation: celebration-enter 0.5s ease-out;
+}
+
+@keyframes celebration-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Animaciones para Samadhi */
+.celebration-mascot {
+  animation: mascot-bounce 2s ease-in-out infinite;
+}
+
+.meditation-mascot {
+  animation: mascot-float 3s ease-in-out infinite;
+}
+
+.welcome-mascot {
+  animation: mascot-wave 2.5s ease-in-out infinite;
+}
+
+.hero-mascot {
+  animation: mascot-glow 4s ease-in-out infinite;
+}
+
+.form-mascot {
+  animation: mascot-nod 2s ease-in-out infinite;
+}
+
+.nav-mascot {
+  animation: mascot-pulse 3s ease-in-out infinite;
+}
+
+@keyframes mascot-bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes mascot-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes mascot-wave {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  25% {
+    transform: rotate(-5deg);
+  }
+  75% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes mascot-glow {
+  0%, 100% {
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.2));
+  }
+  50% {
+    filter: drop-shadow(0 8px 16px rgba(255, 215, 0, 0.3));
+  }
+}
+
+@keyframes mascot-nod {
+  0%, 100% {
+    transform: rotateX(0deg);
+  }
+  50% {
+    transform: rotateX(10deg);
+  }
+}
+
+@keyframes mascot-pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.celebration-confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ff6b6b;
+  animation: confetti-fall 3s linear infinite;
+}
+
+.celebration-confetti:nth-child(2) {
+  background: #4ecdc4;
+  animation-delay: 0.5s;
+}
+
+.celebration-confetti:nth-child(3) {
+  background: #45b7d1;
+  animation-delay: 1s;
+}
+
+.celebration-confetti:nth-child(4) {
+  background: #96ceb4;
+  animation-delay: 1.5s;
+}
+
+.celebration-confetti:nth-child(5) {
+  background: #feca57;
+  animation-delay: 2s;
+}
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
 :root {
   --primary-color: #A8D5E2;
   --secondary-color: #B8E6B8;
@@ -86,3 +261,62 @@ a {
 .soft-shadow {
   box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
 }
+
+/* Animaciones de celebración */
+@keyframes confetti {
+  0% {
+    transform: translateY(-10px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(400px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1) rotate(180deg);
+  }
+}
+

@@ -2,12 +2,25 @@
 
 import { Container, Typography, Button, Box, Card, CardContent, Grid } from '@mui/material'
 import { SelfImprovement, Analytics, Language } from '@mui/icons-material'
+import { useLoadingCursor } from '../hooks/useLoadingCursor'
 
 export default function HomePage() {
+  const { withLoadingCursor } = useLoadingCursor()
+  
   return (
     <Box className="min-h-screen gradient-bg">
       <Container maxWidth="lg" sx={{ py: 8 }}>
         <Box textAlign="center" mb={8} className="animate-fadeIn">
+          <Box
+            sx={{
+              width: 120,
+              height: 120,
+              margin: '0 auto 24px',
+              background: 'url("/samadhi-hero.png") no-repeat center center',
+              backgroundSize: 'contain',
+              filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.2))',
+            }}
+          />
           <Typography 
             variant="h2" 
             component="h1" 
@@ -35,7 +48,7 @@ export default function HomePage() {
             <Button
               variant="contained"
               size="large"
-              href="/auth/login"
+              onClick={() => withLoadingCursor(() => window.location.href = '/auth/login')}
               sx={{
                 backgroundColor: 'white',
                 color: 'primary.main',
@@ -51,7 +64,7 @@ export default function HomePage() {
             <Button
               variant="outlined"
               size="large"
-              href="/auth/register"
+              onClick={() => withLoadingCursor(() => window.location.href = '/auth/register')}
               sx={{
                 borderColor: 'white',
                 color: 'white',

@@ -53,7 +53,7 @@ model DailyRecord {
   user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   feelingRatings FeelingRating[]
 
-  @@unique([userId, date])
+  // Removido @@unique para permitir múltiples registros por día
   @@map("daily_records")
 }
 
@@ -99,4 +99,30 @@ enum Category {
 enum Language {
   ES
   EN
+}
+
+model Meditation {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  youtubeUrl  String   @map("youtube_url")
+  duration    Int      // duración en minutos
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  tags        MeditationTag[]
+
+  @@map("meditations")
+}
+
+model MeditationTag {
+  id           String      @id @default(cuid())
+  name         String      @unique
+  description  String?
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
+  meditations  Meditation[]
+
+  @@map("meditation_tags")
 }

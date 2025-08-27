@@ -72,3 +72,53 @@ export interface FeelingFormData {
     afterRating: number;
   }[];
 }
+
+export interface Meditation {
+  id: string;
+  title: string;
+  description: string;
+  youtubeUrl: string;
+  duration: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  tags: MeditationTag[];
+}
+
+export interface MeditationTag {
+  id: string;
+  name: string;
+  description?: string;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  meditations?: Meditation[];
+}
+
+export interface CreateMeditationRequest {
+  title: string;
+  description: string;
+  youtubeUrl: string;
+  duration: number;
+  tagIds: string[];
+}
+
+export interface UpdateMeditationRequest {
+  title?: string;
+  description?: string;
+  youtubeUrl?: string;
+  duration?: number;
+  isActive?: boolean;
+  tagIds?: string[];
+}
+
+export interface CreateMeditationTagRequest {
+  name: string;
+  description?: string;
+}
+
+export interface UpdateMeditationTagRequest {
+  name?: string;
+  description?: string;
+  isActive?: boolean;
+}
