@@ -84,3 +84,4 @@ prisma/migrations/
 # Database
 *.db
 *.sqlite
+*.zip

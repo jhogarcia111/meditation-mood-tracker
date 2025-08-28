@@ -52,12 +52,10 @@ export default function LoginPage() {
   })
 
   const onSubmit = async (data: LoginFormData) => {
-    console.log('🚀 Iniciando proceso de login...', data)
     setIsLoading(true)
     setError('')
 
     try {
-      console.log('📡 Enviando petición a /api/auth/login...')
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -66,32 +64,22 @@ export default function LoginPage() {
         body: JSON.stringify(data),
       })
 
-      console.log('📥 Respuesta recibida:', response.status, response.statusText)
       const result = await response.json()
-      console.log('📄 Datos de respuesta:', result)
 
       if (response.ok) {
-        console.log('✅ Login exitoso, guardando token...')
         Cookies.set('auth-token', result.token, { expires: 7 })
-        console.log('📍 Token guardado:', result.token)
-        console.log('👤 Usuario:', result.user)
         
         // Actualizar el contexto de la aplicación
-        console.log('🔄 Actualizando contexto de la aplicación...')
         dispatch({ type: 'SET_USER', payload: result.user })
         
-        console.log('🔄 Redirigiendo a dashboard...')
         // Intentar redirección con timeout
         setTimeout(() => {
-          console.log('⏰ Intentando redirección...')
           withLoadingCursor(() => router.push('/dashboard'))
         }, 100)
       } else {
-        console.log('❌ Error en login:', result.message)
         setError(result.message || 'Error al iniciar sesión')
       }
     } catch (error) {
-      console.log('💥 Error de conexión:', error)
       setError('Error de conexión')
     } finally {
       setIsLoading(false)
@@ -171,10 +159,7 @@ export default function LoginPage() {
             </Alert>
           )}
 
-          <form onSubmit={(e) => {
-            console.log('📝 Formulario enviado')
-            handleSubmit(onSubmit)(e)
-          }}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <TextField
               {...register('userId')}
               fullWidth

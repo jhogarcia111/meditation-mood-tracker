@@ -132,8 +132,6 @@ export default function RegisterPage() {
 
   // Función para navegar al dashboard de manera robusta
   const navigateToDashboard = () => {
-    console.log('Iniciando navegación al dashboard...')
-    
     // Cerrar el modal y navegar inmediatamente
     setShowWelcomeModal(false)
     window.location.href = '/dashboard'
