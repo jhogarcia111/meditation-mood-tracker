@@ -4,6 +4,7 @@ import './globals.css'
 import { AppProvider } from '../contexts/AppContext'
 import ThemeRegistry from '../components/ThemeRegistry'
 import Navigation from '../components/Navigation'
+import { Box } from '@mui/material'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,7 +24,12 @@ export default function RootLayout({
         <ThemeRegistry>
           <AppProvider>
             <Navigation />
-            {children}
+            <Box sx={{ 
+              // El margen se aplicará automáticamente cuando Navigation esté presente
+              minHeight: 'calc(100vh - 64px)' // Altura mínima considerando la barra de navegación
+            }}>
+              {children}
+            </Box>
           </AppProvider>
         </ThemeRegistry>
       </body>

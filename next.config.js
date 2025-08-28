@@ -1,8 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: {
-    domains: ['localhost'],
+  experimental: {
+    optimizeCss: true,
   },
+  images: {
+    domains: ['localhost', 'ngrok.io', 'ngrok-free.app'],
+    unoptimized: true
+  }
 }
 
 module.exports = nextConfig

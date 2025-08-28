@@ -5,6 +5,9 @@ import { logActivity } from '@/lib/activity-logger'
 
 const prisma = new PrismaClient()
 
+// Forzar renderizado dinámico
+export const dynamic = 'force-dynamic'
+
 export async function POST(request: NextRequest) {
   try {
     // Verificar autenticación
@@ -63,7 +66,7 @@ export async function POST(request: NextRequest) {
     // Combinar y crear todas las calificaciones
     const allRatings = beforeRatings.map((before, index) => ({
       ...before,
-      afterRating: afterRatings[index]?.afterRating || null,
+      afterRating: afterRatings[index]?.afterRating || 0,
     }))
 
     await prisma.feelingRating.createMany({

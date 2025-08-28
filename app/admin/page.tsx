@@ -124,15 +124,43 @@ export default function AdminPage() {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Panel de Administración
-        </Typography>
-        
-        <Typography variant="h6" color="text.secondary" gutterBottom>
-          Gestiona sentimientos, usuarios y analíticas del sistema
-        </Typography>
+        {/* Header con título y mascota en 2 columnas */}
+        <Grid container spacing={4} alignItems="center" sx={{ mb: 4 }}>
+          {/* Columna izquierda - Título y subtítulo */}
+          <Grid item xs={12} md={8}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              Panel de Administración
+            </Typography>
+            <Typography variant="h6" color="text.secondary">
+              Gestiona sentimientos, usuarios y analíticas del sistema
+            </Typography>
+          </Grid>
+
+          {/* Columna derecha - Mascota */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ textAlign: 'center' }}>
+              <Box
+                sx={{
+                  width: 150,
+                  height: 150,
+                  margin: '0 auto',
+                  background: 'url("/samadhi-hero.png") no-repeat center center',
+                  backgroundSize: 'contain',
+                  filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.15))',
+                  transition: 'transform 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'scale(1.05)',
+                  }
+                }}
+              />
+              <Typography variant="h6" color="primary" sx={{ mt: 2 }}>
+                ¡Administrando con Amor!
+              </Typography>
+            </Box>
+          </Grid>
+        </Grid>
 
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
@@ -142,115 +170,115 @@ export default function AdminPage() {
 
         <Card sx={{ mb: 3 }}>
           <CardContent>
-                         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-               <Tabs value={tabValue} onChange={handleTabChange}>
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={tabValue} onChange={handleTabChange}>
                 <Tab 
-                   icon={<Analytics />} 
-                   label="Analíticas" 
-                   iconPosition="start"
-                 />
-                 <Tab 
-                   icon={<Psychology />} 
-                   label="Sentimientos" 
-                   iconPosition="start"
-                 />
-                 <Tab 
-                   icon={<SelfImprovement />} 
-                   label="Meditaciones" 
-                   iconPosition="start"
-                 />
-                 <Tab 
-                   icon={<Label />} 
-                   label="Etiquetas" 
-                   iconPosition="start"
-                 />
-                 <Tab 
-                   icon={<People />} 
-                   label="Usuarios" 
-                   iconPosition="start"
-                 />
-               </Tabs>
-             </Box>
+                  icon={<Analytics />} 
+                  label="Analíticas" 
+                  iconPosition="start"
+                />
+                <Tab 
+                  icon={<Psychology />} 
+                  label="Sentimientos" 
+                  iconPosition="start"
+                />
+                <Tab 
+                  icon={<SelfImprovement />} 
+                  label="Meditaciones" 
+                  iconPosition="start"
+                />
+                <Tab 
+                  icon={<Label />} 
+                  label="Etiquetas" 
+                  iconPosition="start"
+                />
+                <Tab 
+                  icon={<People />} 
+                  label="Usuarios" 
+                  iconPosition="start"
+                />
+              </Tabs>
+            </Box>
 
-                         <TabPanel value={tabValue} index={0}>
-               {token && <AnalyticsPanel token={token} />}
-             </TabPanel>
- 
-             <TabPanel value={tabValue} index={1}>
-               {token && <FeelingsManagement token={token} />}
-             </TabPanel>
- 
-             <TabPanel value={tabValue} index={2}>
-               {token && <MeditationManagement token={token} />}
-             </TabPanel>
- 
-             <TabPanel value={tabValue} index={3}>
-               {token && <TagManagement token={token} />}
-             </TabPanel>
- 
-             <TabPanel value={tabValue} index={4}>
-               {token && <UserManagement token={token} />}
-             </TabPanel>
+            <TabPanel value={tabValue} index={0}>
+              {token && <AnalyticsPanel token={token} />}
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={1}>
+              {token && <FeelingsManagement token={token} />}
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={2}>
+              {token && <MeditationManagement token={token} />}
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={3}>
+              {token && <TagManagement token={token} />}
+            </TabPanel>
+
+            <TabPanel value={tabValue} index={4}>
+              {token && <UserManagement token={token} />}
+            </TabPanel>
           </CardContent>
         </Card>
 
-                 <Grid container spacing={3}>
-           <Grid item xs={12} md={3}>
-             <Card>
-               <CardContent sx={{ textAlign: 'center' }}>
-                 <Psychology sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-                 <Typography variant="h4" gutterBottom>
-                   {stats.activeFeelings}
-                 </Typography>
-                 <Typography variant="h6" color="text.secondary">
-                   Sentimientos Activos
-                 </Typography>
-               </CardContent>
-             </Card>
-           </Grid>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Psychology sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+                <Typography variant="h4" gutterBottom>
+                  {stats.activeFeelings}
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Sentimientos Activos
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-           <Grid item xs={12} md={3}>
-             <Card>
-               <CardContent sx={{ textAlign: 'center' }}>
-                 <SelfImprovement sx={{ fontSize: 48, color: 'success.main', mb: 2 }} />
-                 <Typography variant="h4" gutterBottom>
-                   {stats.meditations}
-                 </Typography>
-                 <Typography variant="h6" color="text.secondary">
-                   Meditaciones
-                 </Typography>
-               </CardContent>
-             </Card>
-           </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <SelfImprovement sx={{ fontSize: 48, color: 'success.main', mb: 2 }} />
+                <Typography variant="h4" gutterBottom>
+                  {stats.meditations}
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Meditaciones
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-           <Grid item xs={12} md={3}>
-             <Card>
-               <CardContent sx={{ textAlign: 'center' }}>
-                 <Label sx={{ fontSize: 48, color: 'warning.main', mb: 2 }} />
-                 <Typography variant="h4" gutterBottom>
-                   {stats.tags}
-                 </Typography>
-                 <Typography variant="h6" color="text.secondary">
-                   Etiquetas
-                 </Typography>
-               </CardContent>
-             </Card>
-           </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <Label sx={{ fontSize: 48, color: 'warning.main', mb: 2 }} />
+                <Typography variant="h4" gutterBottom>
+                  {stats.tags}
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Etiquetas
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
 
-           <Grid item xs={12} md={3}>
-             <Card>
-               <CardContent sx={{ textAlign: 'center' }}>
-                 <People sx={{ fontSize: 48, color: 'secondary.main', mb: 2 }} />
-                 <Typography variant="h4" gutterBottom>
-                   {stats.users}
-                 </Typography>
-                 <Typography variant="h6" color="text.secondary">
-                   Usuarios Registrados
-                 </Typography>
-               </CardContent>
-             </Card>
-           </Grid>
-         </Grid>
+          <Grid item xs={12} md={3}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center' }}>
+                <People sx={{ fontSize: 48, color: 'secondary.main', mb: 2 }} />
+                <Typography variant="h4" gutterBottom>
+                  {stats.users}
+                </Typography>
+                <Typography variant="h6" color="text.secondary">
+                  Usuarios Registrados
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       </Box>
     </Container>
   )

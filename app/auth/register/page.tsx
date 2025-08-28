@@ -22,6 +22,9 @@ import {
 import Link from 'next/link'
 import Cookies from 'js-cookie'
 import { useLoadingCursor } from '../../../hooks/useLoadingCursor'
+import { useApp } from '../../../contexts/AppContext'
+import LanguageSelector from '../../../components/common/LanguageSelector'
+import WelcomeModal from '../../../components/WelcomeModal'
 
 const registerSchema = z.object({
   userId: z.string().min(3, 'El ID de usuario debe tener al menos 3 caracteres'),
@@ -45,13 +48,28 @@ const COUNTRIES = [
 
 export default function RegisterPage() {
   const router = useRouter()
+  const { state } = useApp()
   const { withLoadingCursor } = useLoadingCursor()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
+  const [showInvitationModal, setShowInvitationModal] = useState(false)
+  const t = state.translations
 
   useEffect(() => {
     setIsHydrated(true)
+    
+    // Verificar si es la primera vez que el usuario visita la página de registro
+    const hasSeenInvitation = localStorage.getItem('hasSeenRegisterInvitation')
+    if (!hasSeenInvitation) {
+      // Mostrar modal de invitación después de un pequeño delay
+      const timer = setTimeout(() => {
+        setShowInvitationModal(true)
+      }, 1000)
+      
+      return () => clearTimeout(timer)
+    }
   }, [])
 
   const {
@@ -80,17 +98,45 @@ export default function RegisterPage() {
 
       const result = await response.json()
 
-      if (response.ok) {
-        Cookies.set('auth-token', result.token, { expires: 7 })
-        withLoadingCursor(() => router.push('/dashboard'))
-      } else {
-        setError(result.message || 'Error al registrarse')
-      }
+              if (response.ok) {
+          Cookies.set('auth-token', result.token, { expires: 7 })
+          // Mostrar modal de bienvenida en lugar de redirigir inmediatamente
+          setShowWelcomeModal(true)
+        } else {
+          setError(result.message || 'Error al registrarse')
+        }
     } catch (error) {
       setError('Error de conexión')
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleWelcomeContinue = () => {
+    navigateToDashboard()
+  }
+
+  const handleWelcomeClose = () => {
+    navigateToDashboard()
+  }
+
+  const handleInvitationContinue = () => {
+    setShowInvitationModal(false)
+    localStorage.setItem('hasSeenRegisterInvitation', 'true')
+  }
+
+  const handleInvitationClose = () => {
+    setShowInvitationModal(false)
+    localStorage.setItem('hasSeenRegisterInvitation', 'true')
+  }
+
+  // Función para navegar al dashboard de manera robusta
+  const navigateToDashboard = () => {
+    console.log('Iniciando navegación al dashboard...')
+    
+    // Cerrar el modal y navegar inmediatamente
+    setShowWelcomeModal(false)
+    window.location.href = '/dashboard'
   }
 
   if (!isHydrated) {
@@ -131,14 +177,34 @@ export default function RegisterPage() {
             background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
           }}
         >
-          <Box textAlign="center" mb={3}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Registrarse
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Crea tu cuenta en Meditation Mood Tracker
-            </Typography>
-          </Box>
+                  {/* Language Selector */}
+        <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+          <LanguageSelector />
+        </Box>
+
+        <Box textAlign="center" mb={3}>
+          {/* Mascota Samadhi */}
+          <Box
+            sx={{
+              width: 120,
+              height: 120,
+              margin: '0 auto 16px',
+              background: 'url("/samadhi-form.png") no-repeat center center',
+              backgroundSize: 'contain',
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
+              transition: 'transform 0.3s ease-in-out',
+              '&:hover': {
+                transform: 'scale(1.05)',
+              }
+            }}
+          />
+          <Typography variant="h4" component="h1" gutterBottom>
+            {t.auth?.register?.title || 'Registrarse'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t.auth?.register?.subtitle || 'Crea tu cuenta en Meditation Mood Tracker'}
+          </Typography>
+        </Box>
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -150,7 +216,7 @@ export default function RegisterPage() {
             <TextField
               {...register('userId')}
               fullWidth
-              label="ID de Usuario"
+              label={t.auth?.register?.userId || 'ID de Usuario'}
               variant="outlined"
               margin="normal"
               error={!!errors.userId}
@@ -161,7 +227,7 @@ export default function RegisterPage() {
             <TextField
               {...register('email')}
               fullWidth
-              label="Email"
+              label={t.auth?.register?.email || 'Email'}
               type="email"
               variant="outlined"
               margin="normal"
@@ -173,7 +239,7 @@ export default function RegisterPage() {
             <TextField
               {...register('password')}
               fullWidth
-              label="Contraseña"
+              label={t.auth?.register?.password || 'Contraseña'}
               type="password"
               variant="outlined"
               margin="normal"
@@ -185,7 +251,7 @@ export default function RegisterPage() {
             <TextField
               {...register('confirmPassword')}
               fullWidth
-              label="Confirmar Contraseña"
+              label={t.auth?.register?.confirmPassword || 'Confirmar Contraseña'}
               type="password"
               variant="outlined"
               margin="normal"
@@ -195,10 +261,10 @@ export default function RegisterPage() {
             />
 
             <FormControl fullWidth margin="normal" sx={{ mb: 2 }}>
-              <InputLabel>País</InputLabel>
+              <InputLabel>{t.auth?.register?.country || 'País'}</InputLabel>
               <Select
                 {...register('country')}
-                label="País"
+                label={t.auth?.register?.country || 'País'}
                 error={!!errors.country}
               >
                 {COUNTRIES.map((country) => (
@@ -210,10 +276,10 @@ export default function RegisterPage() {
             </FormControl>
 
             <FormControl fullWidth margin="normal" sx={{ mb: 3 }}>
-              <InputLabel>Idioma</InputLabel>
+              <InputLabel>{t.auth?.register?.language || 'Idioma'}</InputLabel>
               <Select
                 {...register('language')}
-                label="Idioma"
+                label={t.auth?.register?.language || 'Idioma'}
                 error={!!errors.language}
               >
                 <MenuItem value="ES">Español</MenuItem>
@@ -236,20 +302,36 @@ export default function RegisterPage() {
                 },
               }}
             >
-              {isLoading ? 'Registrando...' : 'Registrarse'}
+              {isLoading ? 'Registrando...' : (t.auth?.register?.registerButton || 'Registrarse')}
             </Button>
 
             <Box textAlign="center">
               <Typography variant="body2" color="text.secondary">
-                ¿Ya tienes cuenta?{' '}
+                {t.auth?.register?.hasAccount || '¿Ya tienes cuenta?'}{' '}
                 <Link href="/auth/login" style={{ color: '#7BC4D8', textDecoration: 'none' }}>
-                  Inicia sesión aquí
+                  {t.auth?.register?.loginLink || 'Inicia sesión aquí'}
                 </Link>
               </Typography>
             </Box>
           </form>
         </Paper>
       </Box>
+      
+      {/* Modal de invitación inicial */}
+      <WelcomeModal
+        open={showInvitationModal}
+        onContinue={handleInvitationContinue}
+        onClose={handleInvitationClose}
+        mode="invitation"
+      />
+      
+      {/* Modal de bienvenida post-registro */}
+      <WelcomeModal
+        open={showWelcomeModal}
+        onContinue={handleWelcomeContinue}
+        onClose={handleWelcomeClose}
+        mode="welcome"
+      />
     </Container>
   )
 }

@@ -157,7 +157,7 @@ export default function CelebrationModal({ open, onClose, recordNumber }: Celebr
             }}
           >
             <img
-              src="/mascot.svg"
+              src="/mascot.png"
               alt="Mascota feliz"
               style={{
                 width: 120,

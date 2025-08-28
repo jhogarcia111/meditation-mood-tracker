@@ -48,8 +48,17 @@ export async function authenticateUser(credentials: LoginCredentials): Promise<A
     return null;
   }
 
-  const token = generateToken(user);
-  return { user, token };
+  const token = generateToken({
+    ...user,
+    country: user.country || undefined
+  });
+  return { 
+    user: {
+      ...user,
+      country: user.country || undefined
+    }, 
+    token 
+  };
 }
 
 export async function createUser(data: RegisterData): Promise<AuthResponse> {
@@ -65,6 +74,15 @@ export async function createUser(data: RegisterData): Promise<AuthResponse> {
     }
   });
 
-  const token = generateToken(user);
-  return { user, token };
+  const token = generateToken({
+    ...user,
+    country: user.country || undefined
+  });
+  return { 
+    user: {
+      ...user,
+      country: user.country || undefined
+    }, 
+    token 
+  };
 }

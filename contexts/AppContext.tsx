@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useReducer, useEffect } from 'react'
 import Cookies from 'js-cookie'
+import { getTranslation } from '@/lib/i18n'
 
 interface User {
   id: string
@@ -17,6 +18,7 @@ interface AppState {
   isAuthenticated: boolean
   isLoading: boolean
   language: 'ES' | 'EN'
+  translations: any
 }
 
 type AppAction =
@@ -30,6 +32,7 @@ const initialState: AppState = {
   isAuthenticated: false,
   isLoading: true,
   language: 'ES',
+  translations: getTranslation('ES'),
 }
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -57,6 +60,7 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         language: action.payload,
+        translations: getTranslation(action.payload),
       }
     default:
       return state
@@ -74,6 +78,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, initialState)
 
   useEffect(() => {
+    // Cargar idioma guardado
+    if (typeof window !== 'undefined') {
+      const savedLanguage = localStorage.getItem('language') as 'ES' | 'EN'
+      if (savedLanguage && (savedLanguage === 'ES' || savedLanguage === 'EN')) {
+        dispatch({ type: 'SET_LANGUAGE', payload: savedLanguage })
+      }
+    }
+
     const checkAuth = async () => {
       const token = Cookies.get('auth-token')
       

@@ -21,6 +21,7 @@ import Link from 'next/link'
 import Cookies from 'js-cookie'
 import { useApp } from '../../../contexts/AppContext'
 import { useLoadingCursor } from '../../../hooks/useLoadingCursor'
+import LanguageSelector from '../../../components/common/LanguageSelector'
 
 const loginSchema = z.object({
   userId: z.string().min(1, 'El ID de usuario es requerido'),
@@ -31,11 +32,12 @@ type LoginFormData = z.infer<typeof loginSchema>
 
 export default function LoginPage() {
   const router = useRouter()
-  const { dispatch } = useApp()
+  const { state, dispatch } = useApp()
   const { withLoadingCursor } = useLoadingCursor()
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const t = state.translations
 
   useEffect(() => {
     setIsHydrated(true)
@@ -134,14 +136,34 @@ export default function LoginPage() {
             background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
           }}
         >
-          <Box textAlign="center" mb={3}>
-            <Typography variant="h4" component="h1" gutterBottom>
-              Iniciar Sesión
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Accede a tu cuenta de Meditation Mood Tracker
-            </Typography>
-          </Box>
+                  {/* Language Selector */}
+        <Box sx={{ position: 'absolute', top: 20, right: 20, zIndex: 10 }}>
+          <LanguageSelector />
+        </Box>
+
+        <Box textAlign="center" mb={3}>
+          {/* Mascota Samadhi */}
+          <Box
+            sx={{
+              width: 120,
+              height: 120,
+              margin: '0 auto 16px',
+              background: 'url("/samadhi-form.png") no-repeat center center',
+              backgroundSize: 'contain',
+              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
+              transition: 'transform 0.3s ease-in-out',
+              '&:hover': {
+                transform: 'scale(1.05)',
+              }
+            }}
+          />
+          <Typography variant="h4" component="h1" gutterBottom>
+            {t.auth?.login?.title || 'Iniciar Sesión'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t.auth?.login?.subtitle || 'Accede a tu cuenta de Meditation Mood Tracker'}
+          </Typography>
+        </Box>
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
@@ -156,7 +178,7 @@ export default function LoginPage() {
             <TextField
               {...register('userId')}
               fullWidth
-              label="ID de Usuario"
+              label={t.auth?.login?.userId || 'ID de Usuario'}
               variant="outlined"
               margin="normal"
               error={!!errors.userId}
@@ -167,7 +189,7 @@ export default function LoginPage() {
             <TextField
               {...register('password')}
               fullWidth
-              label="Contraseña"
+              label={t.auth?.login?.password || 'Contraseña'}
               type="password"
               variant="outlined"
               margin="normal"
@@ -191,14 +213,14 @@ export default function LoginPage() {
                 },
               }}
             >
-              {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
+              {isLoading ? 'Iniciando sesión...' : (t.auth?.login?.loginButton || 'Iniciar Sesión')}
             </Button>
 
             <Box textAlign="center">
               <Typography variant="body2" color="text.secondary">
-                ¿No tienes cuenta?{' '}
+                {t.auth?.login?.noAccount || '¿No tienes cuenta?'}{' '}
                 <Link href="/auth/register" style={{ color: '#7BC4D8', textDecoration: 'none' }}>
-                  Regístrate aquí
+                  {t.auth?.login?.registerLink || 'Regístrate aquí'}
                 </Link>
               </Typography>
             </Box>

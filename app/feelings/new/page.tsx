@@ -32,12 +32,11 @@ import {
   Dialog,
   DialogContent,
 } from '@mui/material'
-// Removido framer-motion para usar animaciones CSS simples
 
 // Esquemas de validación
 const step1Schema = z.object({
   date: z.string().min(1, 'La fecha es requerida'),
-  beforeFeelings: z.record(z.string(), z.number().min(1).max(10)),
+  beforeFeelings: z.record(z.string(), z.number().min(1, 'Debes seleccionar un valor mínimo de 1').max(10).optional()),
   moodDescription: z.string().optional(),
 })
 
@@ -46,7 +45,7 @@ const step2Schema = z.object({
 })
 
 const step3Schema = z.object({
-  afterFeelings: z.record(z.string(), z.number().min(1).max(10)),
+  afterFeelings: z.record(z.string(), z.number().min(1, 'Debes seleccionar un valor mínimo de 1').max(10).optional()),
   postMeditationNotes: z.string().optional(),
 })
 
@@ -112,10 +111,10 @@ export default function NewRecordPage() {
       generateRecommendations()
     }
     if (activeStep === 2) {
-      // Inicializar afterFeelings con valores por defecto cuando llegamos a la Fase 3
-      const initialAfterFeelings: Record<string, number> = {}
+      // Inicializar afterFeelings con valores nulos cuando llegamos a la Fase 3
+      const initialAfterFeelings: Record<string, number | undefined> = {}
       feelings.forEach((feeling: Feeling) => {
-        initialAfterFeelings[feeling.id] = 5
+        initialAfterFeelings[feeling.id] = undefined
       })
       setValue('afterFeelings', initialAfterFeelings)
     }
@@ -141,10 +140,10 @@ export default function NewRecordPage() {
         const shuffledFeelings = shuffleArray(data)
         setFeelings(shuffledFeelings)
         
-        // Inicializar ratings solo para beforeFeelings
-        const initialFeelings: Record<string, number> = {}
+        // Inicializar ratings para beforeFeelings con valores nulos (undefined)
+        const initialFeelings: Record<string, number | undefined> = {}
         shuffledFeelings.forEach((feeling: Feeling) => {
-          initialFeelings[feeling.id] = 5
+          initialFeelings[feeling.id] = undefined
         })
         setValue('beforeFeelings', initialFeelings)
         // No inicializar afterFeelings aquí, se hará en la Fase 3
@@ -159,10 +158,8 @@ export default function NewRecordPage() {
     setSelectedMeditationForVideo(meditation)
     setShowYouTubeModal(true)
     setMeditationStarted(true)
-    // Si no hay meditación seleccionada en el picklist, establecer esta como seleccionada
-    if (!watch('selectedMeditation')) {
-      setValue('selectedMeditation', meditation.id)
-    }
+    // Actualizar automáticamente el picklist con la meditación seleccionada
+    setValue('selectedMeditation', meditation.id)
   }
 
   const handleCloseYouTubeModal = () => {
@@ -238,6 +235,36 @@ export default function NewRecordPage() {
   }
 
   const handleNext = () => {
+    // Validar que todos los sentimientos tengan valores antes de avanzar
+    if (activeStep === 0) {
+      const currentBeforeFeelings = watch('beforeFeelings')
+      const hasAllValues = feelings.every(feeling => 
+        currentBeforeFeelings?.[feeling.id] && 
+        typeof currentBeforeFeelings[feeling.id] === 'number' &&
+        currentBeforeFeelings[feeling.id]! > 0
+      )
+      
+      if (!hasAllValues) {
+        setError('Debes evaluar todos los sentimientos antes de continuar')
+        return
+      }
+    }
+    
+    if (activeStep === 2) {
+      const currentAfterFeelings = watch('afterFeelings')
+      const hasAllValues = feelings.every(feeling => 
+        currentAfterFeelings?.[feeling.id] && 
+        typeof currentAfterFeelings[feeling.id] === 'number' &&
+        currentAfterFeelings[feeling.id]! > 0
+      )
+      
+      if (!hasAllValues) {
+        setError('Debes evaluar todos los sentimientos después de meditar antes de continuar')
+        return
+      }
+    }
+    
+    setError('') // Limpiar errores si todo está bien
     setActiveStep((prev) => prev + 1)
   }
 
@@ -246,6 +273,20 @@ export default function NewRecordPage() {
   }
 
   const onSubmit = async (data: FormData) => {
+    // Validar que todos los sentimientos tengan valores antes de guardar
+    const currentAfterFeelings = watch('afterFeelings')
+    const hasAllAfterValues = feelings.every(feeling => 
+      currentAfterFeelings?.[feeling.id] && 
+      typeof currentAfterFeelings[feeling.id] === 'number' &&
+      currentAfterFeelings[feeling.id]! > 0
+    )
+    
+    if (!hasAllAfterValues) {
+      setError('Debes evaluar todos los sentimientos después de meditar antes de guardar')
+      setIsLoading(false)
+      return
+    }
+
     setIsLoading(true)
     setError('')
 
@@ -362,28 +403,45 @@ export default function NewRecordPage() {
                   .filter((feeling) => feeling.category === category)
                   .map((feeling) => (
                     <Grid item xs={12} sm={6} key={feeling.id}>
-                      <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                      <Box sx={{ 
+                        p: 2, 
+                        border: (errors.beforeFeelings?.[feeling.id] || (!watch('beforeFeelings')?.[feeling.id] && error)) ? '2px solid #f44336' : '1px solid #e0e0e0', 
+                        borderRadius: 2,
+                        backgroundColor: (errors.beforeFeelings?.[feeling.id] || (!watch('beforeFeelings')?.[feeling.id] && error)) ? '#ffebee' : 'transparent'
+                      }}>
                         <Typography variant="body2" gutterBottom>
                           {feeling.nameEs}
                         </Typography>
-                                                 <Controller
-                           name={`beforeFeelings.${feeling.id}`}
-                           control={control}
-                           render={({ field }) => (
-                             <Slider
-                               {...field}
-                               min={1}
-                               max={10}
-                               marks
-                               valueLabelDisplay="on"
-                               sx={{ mt: 1 }}
-                             />
-                           )}
-                         />
+                        <Controller
+                          name={`beforeFeelings.${feeling.id}`}
+                          control={control}
+                          render={({ field }) => (
+                            <Slider
+                              {...field}
+                              min={1}
+                              max={10}
+                              marks
+                              valueLabelDisplay="on"
+                              value={field.value || undefined}
+                              onChange={(_, value) => field.onChange(value)}
+                              sx={{ mt: 1 }}
+                            />
+                          )}
+                        />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                           <Typography variant="caption" color="text.secondary">1</Typography>
                           <Typography variant="caption" color="text.secondary">10</Typography>
                         </Box>
+                        {!watch('beforeFeelings')?.[feeling.id] && (
+                          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                            Selecciona tu escala
+                          </Typography>
+                        )}
+                        {(errors.beforeFeelings?.[feeling.id] || (!watch('beforeFeelings')?.[feeling.id] && error)) && (
+                          <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                            {errors.beforeFeelings?.[feeling.id]?.message || 'Debes seleccionar algún valor para esta emoción'}
+                          </Typography>
+                        )}
                       </Box>
                     </Grid>
                   ))}
@@ -441,10 +499,10 @@ export default function NewRecordPage() {
         control={control}
         render={({ field }) => (
           <FormControl fullWidth sx={{ mb: 4 }}>
-            <InputLabel>Seleccionar una meditación (opcional)</InputLabel>
+            <InputLabel>Meditación seleccionada (se actualiza automáticamente)</InputLabel>
             <Select 
               {...field} 
-              label="Seleccionar una meditación (opcional)"
+              label="Meditación seleccionada (se actualiza automáticamente)"
               disabled={meditationStarted}
             >
               <MenuItem value="">
@@ -458,7 +516,7 @@ export default function NewRecordPage() {
             </Select>
             {meditationStarted && (
               <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
-                La selección está bloqueada porque ya comenzaste una meditación
+                La selección se actualizó automáticamente con la meditación que comenzaste
               </Typography>
             )}
           </FormControl>
@@ -586,28 +644,45 @@ export default function NewRecordPage() {
                   .filter((feeling) => feeling.category === category)
                   .map((feeling) => (
                     <Grid item xs={12} sm={6} key={feeling.id}>
-                      <Box sx={{ p: 2, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+                      <Box sx={{ 
+                        p: 2, 
+                        border: (errors.afterFeelings?.[feeling.id] || (!watch('afterFeelings')?.[feeling.id] && error)) ? '2px solid #f44336' : '1px solid #e0e0e0', 
+                        borderRadius: 2,
+                        backgroundColor: (errors.afterFeelings?.[feeling.id] || (!watch('afterFeelings')?.[feeling.id] && error)) ? '#ffebee' : 'transparent'
+                      }}>
                         <Typography variant="body2" gutterBottom>
                           {feeling.nameEs}
                         </Typography>
-                                                 <Controller
-                           name={`afterFeelings.${feeling.id}`}
-                           control={control}
-                           render={({ field }) => (
-                             <Slider
-                               {...field}
-                               min={1}
-                               max={10}
-                               marks
-                               valueLabelDisplay="on"
-                               sx={{ mt: 1 }}
-                             />
-                           )}
-                         />
+                        <Controller
+                          name={`afterFeelings.${feeling.id}`}
+                          control={control}
+                          render={({ field }) => (
+                            <Slider
+                              {...field}
+                              min={1}
+                              max={10}
+                              marks
+                              valueLabelDisplay="on"
+                              value={field.value || undefined}
+                              onChange={(_, value) => field.onChange(value)}
+                              sx={{ mt: 1 }}
+                            />
+                          )}
+                        />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1 }}>
                           <Typography variant="caption" color="text.secondary">1</Typography>
                           <Typography variant="caption" color="text.secondary">10</Typography>
                         </Box>
+                        {!watch('afterFeelings')?.[feeling.id] && (
+                          <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                            Selecciona tu escala
+                          </Typography>
+                        )}
+                        {(errors.afterFeelings?.[feeling.id] || (!watch('afterFeelings')?.[feeling.id] && error)) && (
+                          <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block' }}>
+                            {errors.afterFeelings?.[feeling.id]?.message || 'Debes seleccionar algún valor para esta emoción'}
+                          </Typography>
+                        )}
                       </Box>
                     </Grid>
                   ))}
@@ -797,3 +872,4 @@ export default function NewRecordPage() {
     </Container>
   )
 }
+

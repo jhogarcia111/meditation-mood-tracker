@@ -5,6 +5,9 @@ import { logActivity } from '@/lib/activity-logger'
 
 const prisma = new PrismaClient()
 
+// Forzar renderizado dinámico
+export const dynamic = 'force-dynamic'
+
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }

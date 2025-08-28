@@ -10,7 +10,7 @@ export const useLoadingCursor = () => {
   }, [])
 
   const withLoadingCursor = useCallback(async <T>(
-    asyncFunction: () => Promise<T>,
+    asyncFunction: () => Promise<T> | T,
     delay: number = 500 // Delay mínimo para mostrar el cursor
   ): Promise<T> => {
     setLoadingCursor()
@@ -18,7 +18,7 @@ export const useLoadingCursor = () => {
     const startTime = Date.now()
     
     try {
-      const result = await asyncFunction()
+      const result = await Promise.resolve(asyncFunction())
       
       // Asegurar que el cursor se muestre por al menos el delay especificado
       const elapsedTime = Date.now() - startTime

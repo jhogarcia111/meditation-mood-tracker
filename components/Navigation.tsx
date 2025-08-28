@@ -69,16 +69,27 @@ export default function Navigation() {
         <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
           <Box
             sx={{
-              width: 40,
-              height: 40,
-              marginRight: 12,
+              width: { xs: 50, sm: 60, md: 70 }, // Responsive: 50px en móvil, 60px en tablet, 70px en desktop
+              height: { xs: 50, sm: 60, md: 70 },
+              marginRight: { xs: 1, sm: 2, md: 3 }, // Menos margen en móvil
               background: 'url("/samadhi-nav.png") no-repeat center center',
               backgroundSize: 'contain',
               filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))',
+              transition: 'transform 0.2s ease-in-out',
+              '&:hover': {
+                transform: 'scale(1.1)',
+              }
             }}
           />
-          <Typography variant="h6" component="div">
-            Meditation Mood Tracker
+          <Typography 
+            variant="h6" 
+            component="div"
+            sx={{
+              fontSize: { xs: '1rem', sm: '1.25rem', md: '1.5rem' }, // Texto responsive
+              fontWeight: 'bold'
+            }}
+          >
+            {state.translations.hero?.title || 'Meditation Mood Tracker'}
           </Typography>
         </Box>
 
@@ -87,22 +98,34 @@ export default function Navigation() {
             color="inherit" 
             startIcon={<Dashboard />}
             onClick={() => withLoadingCursor(() => router.push('/dashboard'))}
+            sx={{
+              display: { xs: 'none', sm: 'flex' }, // Ocultar en móvil, mostrar en tablet+
+              fontSize: { sm: '0.875rem', md: '1rem' }
+            }}
           >
-            Dashboard
+            {state.translations.navigation?.dashboard || 'Dashboard'}
           </Button>
 
           <Button 
             color="inherit" 
             startIcon={<Assessment />}
             onClick={() => withLoadingCursor(() => router.push('/dashboard/stats'))}
+            sx={{
+              display: { xs: 'none', sm: 'flex' }, // Ocultar en móvil, mostrar en tablet+
+              fontSize: { sm: '0.875rem', md: '1rem' }
+            }}
           >
-            Estadísticas
+            {state.translations.navigation?.statistics || 'Estadísticas'}
           </Button>
 
           {state.user?.role === 'ADMIN' && (
             <Button 
               color="inherit" 
               onClick={() => withLoadingCursor(() => router.push('/admin'))}
+              sx={{
+                display: { xs: 'none', sm: 'flex' }, // Ocultar en móvil, mostrar en tablet+
+                fontSize: { sm: '0.875rem', md: '1rem' }
+              }}
             >
               Admin
             </Button>
@@ -115,6 +138,10 @@ export default function Navigation() {
             aria-haspopup="true"
             onClick={handleMenu}
             color="inherit"
+            sx={{
+              width: { xs: 40, sm: 48 }, // Tamaño responsive para el botón de menú
+              height: { xs: 40, sm: 48 }
+            }}
           >
             <Person />
           </IconButton>
@@ -135,18 +162,18 @@ export default function Navigation() {
           >
             <MenuItem onClick={() => handleNavigation('/dashboard')}>
               <Dashboard sx={{ mr: 1 }} />
-              Dashboard
+              {state.translations.navigation?.dashboard || 'Dashboard'}
             </MenuItem>
             <MenuItem onClick={() => handleNavigation('/dashboard/stats')}>
               <Assessment sx={{ mr: 1 }} />
-              Mis Estadísticas
+              {state.translations.navigation?.statistics || 'Mis Estadísticas'}
             </MenuItem>
             <MenuItem onClick={() => handleNavigation('/feelings/new')}>
-              Nuevo Registro
+              {state.translations.navigation?.newRecord || 'Nuevo Registro'}
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <Logout sx={{ mr: 1 }} />
-              Cerrar Sesión
+              {state.translations.navigation?.logout || 'Cerrar Sesión'}
             </MenuItem>
           </Menu>
         </Box>

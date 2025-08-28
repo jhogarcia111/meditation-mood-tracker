@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       .filter(([feelingId, rating]) => {
         // Aquí necesitarías obtener el feeling para verificar si es BAD
         // Por ahora, asumimos que ratings altos (6+) indican sentimientos negativos fuertes
-        return rating >= 6
+        return (rating as number) >= 6
       })
 
     const recommendations = []

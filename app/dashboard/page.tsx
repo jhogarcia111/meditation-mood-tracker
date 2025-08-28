@@ -41,6 +41,7 @@ export default function DashboardPage() {
     feelingChanges: []
   })
   const [loadingStats, setLoadingStats] = useState(true)
+  const t = state.translations
 
   useEffect(() => {
     if (!state.isLoading && !state.isAuthenticated) {
@@ -111,48 +112,70 @@ export default function DashboardPage() {
   }
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box sx={{ py: 4 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Box
-            sx={{
-              width: 60,
-              height: 60,
-              marginRight: 16,
-              background: 'url("/samadhi-welcome.png") no-repeat center center',
-              backgroundSize: 'contain',
-              filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.1))',
-            }}
-          />
-          <Typography variant="h3" component="h1">
-            ¡Bienvenido, {state.user?.userId}!
+        {/* Header de bienvenida que abarca las 3 columnas */}
+        <Box sx={{ mb: 4, textAlign: 'center' }}>
+          <Typography variant="h4" component="h1" gutterBottom>
+            {state.translations.dashboard?.welcome || '¡Bienvenido'}, {state.user?.userId}!
+          </Typography>
+          <Typography variant="h6" color="text.secondary">
+            {state.translations.dashboard?.subtitle || 'Dashboard de Mi Brújula Emocional'}
           </Typography>
         </Box>
-        
-        <Typography variant="h6" color="text.secondary" gutterBottom>
-          Dashboard de Meditation Mood Tracker
-        </Typography>
 
-        <Grid container spacing={3} sx={{ mt: 3 }}>
-          {/* Columna Izquierda - Acciones del Usuario */}
-          <Grid item xs={12} md={6}>
+        <Grid container spacing={4}>
+          {/* Primera Columna - Solo Mascota */}
+          <Grid item xs={12} md={3}>
+            <Card sx={{ 
+              background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+              border: '2px solid #e1f5fe',
+              height: '100%'
+            }}>
+              <CardContent sx={{ textAlign: 'center', py: 4 }}>
+                <Box
+                  sx={{
+                    width: 200,
+                    height: 200,
+                    margin: '0 auto 16px',
+                    background: 'url("/samadhi-welcome.png") no-repeat center center',
+                    backgroundSize: 'contain',
+                    filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.15))',
+                    transition: 'transform 0.3s ease-in-out',
+                    '&:hover': {
+                      transform: 'scale(1.05)',
+                    }
+                  }}
+                />
+                <Typography variant="h5" color="primary" gutterBottom>
+                  ¡Hola! Soy Samadhi
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Tu compañero en este viaje de autoconocimiento y meditación
+                </Typography>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* Segunda Columna - Registrar Sentimientos, Ver Progreso y Admin */}
+          <Grid item xs={12} md={4}>
             <Grid container spacing={3}>
               <Grid item xs={12}>
                 <Card>
                   <CardContent>
                     <Typography variant="h5" gutterBottom>
-                      Registrar Sentimientos
+                      {t.dashboard?.actions?.registerFeelings?.title || 'Registrar Sentimientos'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" paragraph>
-                      Registra cómo te sientes antes y después de meditar
+                      {t.dashboard?.actions?.registerFeelings?.description || 'Registra cómo te sientes antes y después de meditar'}
                     </Typography>
-                                         <Button 
-                       variant="contained" 
-                       color="primary"
-                       onClick={() => withLoadingCursor(() => router.push('/feelings/new'))}
-                     >
-                       Nuevo Registro
-                     </Button>
+                    <Button 
+                      variant="contained" 
+                      color="primary"
+                      onClick={() => withLoadingCursor(() => router.push('/feelings/new'))}
+                    >
+                      {t.dashboard?.actions?.registerFeelings?.button || 'Nuevo Registro'}
+                    </Button>
                   </CardContent>
                 </Card>
               </Grid>
@@ -161,28 +184,28 @@ export default function DashboardPage() {
                 <Card>
                   <CardContent>
                     <Typography variant="h5" gutterBottom>
-                      Ver Progreso
+                      {t.dashboard?.actions?.viewProgress?.title || 'Ver Progreso'}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" paragraph>
-                      Revisa tu progreso y estadísticas de meditación
+                      {t.dashboard?.actions?.viewProgress?.description || 'Revisa tu progreso y estadísticas de meditación'}
                     </Typography>
-                                    <Button 
-                  variant="contained" 
-                  sx={{
-                    background: 'linear-gradient(45deg, #FF8A65 30%, #FF7043 90%)',
-                    color: 'white',
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      background: 'linear-gradient(45deg, #FF7043 30%, #FF8A65 90%)',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(255, 138, 101, 0.4)',
-                    },
-                    transition: 'all 0.3s ease-in-out',
-                  }}
-                                     onClick={() => withLoadingCursor(() => router.push('/dashboard/stats'))}
-                >
-                  Ver Estadísticas
-                </Button>
+                    <Button 
+                      variant="contained" 
+                      sx={{
+                        background: 'linear-gradient(45deg, #FF8A65 30%, #FF7043 90%)',
+                        color: 'white',
+                        fontWeight: 'bold',
+                        '&:hover': {
+                          background: 'linear-gradient(45deg, #FF7043 30%, #FF8A65 90%)',
+                          transform: 'translateY(-2px)',
+                          boxShadow: '0 4px 12px rgba(255, 138, 101, 0.4)',
+                        },
+                        transition: 'all 0.3s ease-in-out',
+                      }}
+                      onClick={() => withLoadingCursor(() => router.push('/dashboard/stats'))}
+                    >
+                      {t.dashboard?.actions?.viewProgress?.button || 'Ver Estadísticas'}
+                    </Button>
                   </CardContent>
                 </Card>
               </Grid>
@@ -192,18 +215,18 @@ export default function DashboardPage() {
                   <Card>
                     <CardContent>
                       <Typography variant="h5" gutterBottom>
-                        Panel de Administración
+                        {t.dashboard?.actions?.adminPanel?.title || 'Panel de Administración'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" paragraph>
-                        Gestiona sentimientos, usuarios y analíticas
+                        {t.dashboard?.actions?.adminPanel?.description || 'Gestiona sentimientos, usuarios y analíticas'}
                       </Typography>
-                                             <Button 
-                         variant="contained" 
-                         color="secondary"
-                         onClick={() => withLoadingCursor(() => router.push('/admin'))}
-                       >
-                         Ir al Panel Admin
-                       </Button>
+                      <Button 
+                        variant="contained" 
+                        color="secondary"
+                        onClick={() => withLoadingCursor(() => router.push('/admin'))}
+                      >
+                        {t.dashboard?.actions?.adminPanel?.button || 'Ir al Panel Admin'}
+                      </Button>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -211,38 +234,37 @@ export default function DashboardPage() {
             </Grid>
           </Grid>
 
-          {/* Columna Derecha - Impacto de la Meditación en la Comunidad */}
-          <Grid item xs={12} md={6}>
+          {/* Tercera Columna - Impacto de la Meditación en la Comunidad */}
+          <Grid item xs={12} md={5}>
             <Card sx={{ 
               background: 'linear-gradient(135deg, #f8f9ff 0%, #e8f4fd 100%)',
-              border: '2px solid #e3f2fd'
+              border: '2px solid #e3f2fd',
+              height: '100%'
             }}>
               <CardContent>
                 <Typography variant="h5" gutterBottom>
-                  Impacto de la Meditación en la Comunidad
+                  {t.dashboard?.community?.title || 'Impacto de la Meditación en la Comunidad'}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                  Mira cómo la meditación está transformando vidas cada día
+                  {t.dashboard?.community?.subtitle || 'Mira cómo la meditación está transformando vidas cada día'}
                 </Typography>
 
                 <Grid container spacing={3}>
-                 
-
                   {/* Gráfica 1: Cambios en Sentimientos */}
                   <Grid item xs={12}>
                     <Paper sx={{ p: 3 }}>
                       <Typography variant="h6" gutterBottom>
-                        Impacto Promedio en Sentimientos
+                        {t.dashboard?.community?.impactChart?.title || 'Impacto Promedio en Sentimientos'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Diferencia promedio entre antes y después de meditar
+                        {t.dashboard?.community?.impactChart?.description || 'Diferencia promedio entre antes y después de meditar'}
                       </Typography>
                       {loadingStats ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                           <CircularProgress />
                         </Box>
                       ) : (
-                        <ResponsiveContainer width="100%" height={250}>
+                        <ResponsiveContainer width="100%" height={200}>
                           <BarChart data={publicStats.feelingChanges}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="feeling" />
@@ -255,21 +277,22 @@ export default function DashboardPage() {
                       )}
                     </Paper>
                   </Grid>
-                   {/* Gráfica 2: Actividad Diaria */}
-                   <Grid item xs={12}>
+                  
+                  {/* Gráfica 2: Actividad Diaria */}
+                  <Grid item xs={12}>
                     <Paper sx={{ p: 3 }}>
                       <Typography variant="h6" gutterBottom>
-                        Actividad Diaria en la Plataforma
+                        {t.dashboard?.community?.activityChart?.title || 'Actividad Diaria en la Plataforma'}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                        Más personas están usando la herramienta cada día
+                        {t.dashboard?.community?.activityChart?.description || 'Más personas están usando la herramienta cada día'}
                       </Typography>
                       {loadingStats ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
                           <CircularProgress />
                         </Box>
                       ) : (
-                        <ResponsiveContainer width="100%" height={250}>
+                        <ResponsiveContainer width="100%" height={200}>
                           <LineChart data={publicStats.activityData}>
                             <CartesianGrid strokeDasharray="3 3" />
                             <XAxis dataKey="date" />
